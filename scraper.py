@@ -1,25 +1,18 @@
 #!/usr/bin/python
 
-import requests
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 
 def main():
-    response = make_request('https://nucleo.jor.br')
-    print(response.text)
+    driver = webdriver.Chrome()
+    driver.get('https://festivaldecuritiba.com.br/atracao/buscar/todas/')
+    items = get_page_items(driver)
+    print(items)
 
-def make_request(url: str, wait_time=10, max_wait_time=160, panic_counter=0, max_panic_counter=10) -> requests.Response:
-    response = requests.get(url)
-    status_code = response.status_code
-
-    if(status_code >= 400):
-        print(f"Request para {url} com erro {status_code}.", endl=' ')
-        if panic_counter >= max_panic_counter:
-            printf("PANICO!!! Abortando scraper...")
-            quit()
-        wt = min(wait_time, max_wait_time)
-        print(f"Aguardando {wt} segundos...")
-        time.sleep(wt)
-        response = make_request(url, wait_time*2)
-    return response
+def get_page_items(driver: webdriver.Remote) -> list:
+    content = driver.find_element(By.ID, 'myTabContent')
+    items = content.find_elements(By.TAG_NAME, 'li')
+    return items
 
 if __name__ == '__main__':
     main()
